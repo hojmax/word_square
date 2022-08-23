@@ -1,72 +1,124 @@
 import re
-from collections import defaultdict
-import time
 
-def get_filtered_words():
-    output = []
+
+def create_character_tree(dictionary):
+    root = {}
+
     for word in dictionary:
-        if len(word) == square_size:
-            if bool(re.match("^[a-z]+$", word)):
-                output.append(word)
-    output.sort()
-    return output
+        current = root
+        for letter in word:
+            current = current.setdefault(letter, {})
+
+    return root
 
 
-def get_segment_dict():
-    output = defaultdict(list)
-    for word in words:
-        for i in range(1,square_size+1):
-            output[word[:i]].append(word)
-    return output
+def isFlippable(word, dictionary):
+    return word[::-1] in dictionary
 
 
-def show_square(hori_words, vert_words):
-    to_print = [["#" for j in range(square_size)] if i >= len(hori_words) else list(hori_words[i]) for i in range(square_size)]
-    for i, e in enumerate(vert_words):
-        for j in range(len(hori_words),square_size):
-            to_print[j][i] = e[j]
-    for e in to_print:
-        print("".join(e))
-    print(f'{round(time.time() - startTime, 2)}s')
-    print("")
+def get_filtered_dictionary(dictionary, word_length):
+    lookup = set(dictionary)
+
+    def is_valid(word):
+        return len(word) == word_length and isFlippable(word, lookup) and re.match("^[a-z]+$", word)
+
+    return list(filter(is_valid, dictionary))
 
 
-def tree_search(hori_words, vert_words):
-    if len(hori_words) == square_size or len(vert_words) == square_size:
-        show_square(hori_words, vert_words)
-    else:
-        if len(vert_words) > len(hori_words):
-            temp = hori_words
-            hori_words = vert_words
-            vert_words = temp
-        matching_index = len(vert_words)
-        matching_word = ""
-        for e in hori_words:
-            matching_word += e[matching_index]
-        if matching_word in segment_dict:
-            options = segment_dict[matching_word]
-            for e in options:
-                if e not in hori_words and e not in vert_words:
-                    isPossible = True
-                    for i in range(len(hori_words), square_size):
-                        search_term = ""
-                        for vert in vert_words:
-                            search_term += vert[i]
-                        search_term += e[i]
-                        if search_term not in segment_dict:
-                            isPossible = False
-                            break
-                    if isPossible:
-                        tree_search(hori_words, vert_words + [e])
+def get_dictionary(filename):
+    with open(filename) as f:
+        return f.read().splitlines()
 
-startTime = time.time()
-dictionaryFile = open("dictionary.txt", "r")
-dictionary = dictionaryFile.read().split("\n")
-dictionaryFile.close()
-square_size = 6
-words = get_filtered_words()
-segment_dict = get_segment_dict()
-print(f'Preprocessing: {round(time.time() - startTime, 2)}s')
-for i, word in enumerate(words):
-    print("---", word)
-    tree_search([words[0]], [])
+
+def get_column_possibilities(character_tree, word_square, x):
+    current = character_tree
+
+    for word in word_square:
+        if word[x] not in current:
+            return []
+
+        current = current[word[x]]
+
+    return current.keys()
+
+
+def restricted_word_search(partial_word, character_restrictions, character_tree, container, square_size):
+    if len(partial_word) == square_size:
+        return container.append(partial_word)
+
+    for character in character_restrictions[len(partial_word)]:
+        if character in character_tree:
+            restricted_word_search(
+                partial_word + character,
+                character_restrictions,
+                character_tree[character],
+                container,
+                square_size
+            )
+
+
+def print_word_square(word_square):
+    for word in word_square:
+        print(word)
+    print()
+
+
+def get_possible_words(word_square, character_tree, square_size):
+    column_possibilities = []
+    for x in range(square_size):
+        column_possibilities.append(
+            get_column_possibilities(
+                character_tree,
+                word_square,
+                x
+            )
+        )
+    possible_words = []
+    restricted_word_search(
+        '',
+        column_possibilities,
+        character_tree,
+        possible_words,
+        square_size
+    )
+
+    return possible_words
+
+
+def tree_search(
+    dictionary,
+    character_tree,
+    word_square,
+    square_size
+):
+    if len(word_square) == square_size:
+        return print_word_square(word_square)
+
+    possible_words = (
+        dictionary
+        if len(word_square) == 0
+        else get_possible_words(
+            word_square, character_tree, square_size
+        )
+    )
+
+    for word in possible_words:
+        tree_search(
+            dictionary,
+            character_tree,
+            word_square + [word],
+            square_size
+        )
+
+
+if __name__ == "__main__":
+    square_size = 6
+    dictionary = get_dictionary("dictionary.txt")
+    dictionary = get_filtered_dictionary(dictionary, square_size)
+    character_tree = create_character_tree(dictionary)
+    tree_search(
+        dictionary,
+        character_tree,
+        [],
+        square_size
+    )
