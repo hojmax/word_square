@@ -125,140 +125,12 @@ def tree_search(
         )
 
 
-def get_halfable_words(dictionary, half_dictionary, square_size):
-    lookup = set(half_dictionary)
-
-    def is_valid(word):
-        return word[:square_size//2] in lookup and word[square_size//2:] in lookup
-
-    return list(filter(is_valid, dictionary))
-
-
 if __name__ == "__main__":
     all_solutions = []
-    square_size = 4
+    square_size = 6
     dictionary = get_dictionary("dictionary1.txt")
-    dictionary_half = [
-        'AA',
-        'AB',
-        'AD',
-        'AE',
-        'AG',
-        'AH',
-        'AI',
-        'AL',
-        'AM',
-        'AN',
-        'AR',
-        'AS',
-        'AT',
-        'AW',
-        'AX',
-        'AY',
-        'BA',
-        'BE',
-        'BI',
-        'BO',
-        'BY',
-        'DA',
-        'DE',
-        'DO',
-        'ED',
-        'EF',
-        'EH',
-        'EL',
-        'EM',
-        'EN',
-        'ER',
-        'ES',
-        'ET',
-        'EW',
-        'EX',
-        'FA',
-        'FE',
-        'GI',
-        'GO',
-        'HA',
-        'HE',
-        'HI',
-        'HM',
-        'HO',
-        'ID',
-        'IF',
-        'IN',
-        'IS',
-        'IT',
-        'JO',
-        'JA',
-        'KA',
-        'KI',
-        'LA',
-        'LI',
-        'LO',
-        'MA',
-        'ME',
-        'MI',
-        'MM',
-        'MO',
-        'MU',
-        'MY',
-        'NA',
-        'NE',
-        'NO',
-        'NU',
-        'OD',
-        'OE',
-        'OF',
-        'OH',
-        'OI',
-        'OK',
-        'OM',
-        'ON',
-        'OP',
-        'OR',
-        'OS',
-        'OW',
-        'OX',
-        'OY',
-        'PA',
-        'PE',
-        'PI',
-        'PO',
-        'QI',
-        'RE',
-        'SH',
-        'SI',
-        'SO',
-        'TA',
-        'TE',
-        'TI',
-        'TO',
-        'UH',
-        'UM',
-        'UN',
-        'UP',
-        'US',
-        'UT',
-        'WE',
-        'WO',
-        'XI',
-        'XU',
-        'YA',
-        'YE',
-        'YO',
-        'ZA',
-        'ZE',
-        'ZO'
-    ]
-    dictionary_half = list(map(lambda x: x.lower(), dictionary_half))
-    dictionary = get_filtered_dictionary(
-        get_top_words(28500, 'word_freq.csv'),
-        square_size
-    )
-    print('Dictionary size:', len(dictionary))
-    dictionary = get_halfable_words(dictionary, dictionary_half, square_size)
+    dictionary = get_filtered_dictionary(dictionary,  square_size)
     character_tree = create_character_tree(dictionary)
-    print('Dictionary size:', len(dictionary))
     tree_search(
         dictionary,
         character_tree,
@@ -266,12 +138,6 @@ if __name__ == "__main__":
         square_size,
         all_solutions
     )
-    # print('Amount of solutions:', len(
-    #     list(filter(
-    #         lambda word_square: len(set(word_square)) == square_size,
-    #         all_solutions
-    #     ))
-    # ))
     for solution in all_solutions:
         if len(set(solution)) == square_size:
             print_word_square(solution)
