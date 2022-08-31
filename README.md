@@ -19,7 +19,7 @@ Opun first seing this, two questions immediately came to mind:
 These questions formed the basis of this quick project.
 
 ## 🔬 Results
-It is important to note that all results are dependent on the dictionary used. I choose the largest possible dictionary i could find of 466K english words. If one were to use a larger dictionary, one may come to very different conclusions.
+It is important to note that all results are dependent on the dictionary used. I choose the largest possible dictionary i could find of 466K english words. If one were to use a larger dictionary, one may come to different conclusions.
 
 It turns out that there exists no wordsquares of size greater than 6x6, and that there exists exactly 2 wordsquares of size 6x6. This is what i call the 'Kramer Square':
 ```
@@ -30,7 +30,7 @@ M A N U M A
 E N A M O R
 R E M A R K
 ```
-You can construct the other 6x6 word square by simply reversing the row order. The validity of some of the words used are debatable, but since it is the only possible 6x6 i choose leniency.
+You can construct the other 6x6 word square by simply reversing the row order. The validity of some of the words used are debatable, but since it is the only possible 6x6 i favor leniency.
 
 There are plenty of 5x5's, 56970 to be exact. A favorite of mine is this checkerboard-like square:
 ```
@@ -60,6 +60,24 @@ T E L
 O N
 N O
 ```
+And finally my all time favourite. A 4x4 word square, formed from 2x2 word squares:
+```
+E R   O S
+R E   D O
+    +    
+O D   E R
+S O   R E
+
+    =
+
+ E R O S
+ R E D O
+ O D E R
+ S O R E
+```
+This type of 4x4 square is less rare than one might expect. I favor this specific configuration, since it is constructed from the most frequent 4 letter words.
+
+
 ## 🏗 Implementation
 I will firstly 
 ```
